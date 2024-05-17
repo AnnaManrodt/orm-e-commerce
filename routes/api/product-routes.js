@@ -4,19 +4,32 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
-  // find all products
-  // be sure to include its associated Category and Tag data
+router.get('/', async (req, res) => {
+  try {
+    const result = await Product.findAll({
+      include: [{ model: Category, model: Tag  }]
+    });
+    res.json({ status: "success", payload: result });
+  } catch (err) {
+    res.status(400).json({ status: "error", msg: err.message });
+  }
 });
 
 // get one product
-router.get('/:id', (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await Product.findByPk(req.params.id, {
+      include: [{ model: Category, model: Tag  }],
+    }
+    )
+    res.json({ status: "success", payload: result })
+  } catch(err){
+    res.status(400).json({ status: "error" })
+  }
 });
 
 // create new product
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -24,7 +37,20 @@ router.post('/', (req, res) => {
       stock: 3,
       tagIds: [1, 2, 3, 4]
     }
-  */
+  */  try {
+    const result = await Product.create(req.body, 
+      {
+        product_name: "Basketball",
+        price: 200.00,
+        stock: 3,
+        tagIds: [1, 2, 3, 4]
+      }
+    
+    )
+    res.json({ status: "success", payload: result })
+  } catch(err){
+    res.status(400).json({ status: "error" })
+  }
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -92,8 +118,16 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await Product.destroy(req.params.id, {
+      include: [{ model: Category, model: Tag}],
+    }
+    )
+    res.json({ status: "success", payload: result })
+  } catch(err){
+    res.status(400).json({ status: "error" })
+  }
 });
 
 module.exports = router;
