@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
     )
     res.json({ status: "success", payload: result })
   } catch(err){
-    res.status(400).json({ status: "error" })
+    res.status(400).json({ status: "error", msg: err.message });
   }
 });
 
@@ -120,7 +120,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await Product.destroy(req.params.id, {
+    const result = await Product.destroy({where: {id: req.params.id}}, {
       include: [{ model: Category, model: Tag}],
     }
     )

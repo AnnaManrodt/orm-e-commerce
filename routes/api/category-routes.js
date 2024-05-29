@@ -43,19 +43,20 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const result = await Category.update(req.params.id, {
+    const result = await Category.update(req.body, {where: { id: req.params.id}}, {
       include: [{ model: Product }],
     }
     )
     res.json({ status: "success", payload: result })
   } catch(err){
+    console.log(err)
     res.status(400).json({ status: "error" })
   }
 });
 
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await Category.destroy(req.params.id, {
+    const result = await Category.destroy({where: {id: req.params.id}}, {
       include: [{ model: Product }],
     }
     )
